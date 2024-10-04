@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# to stop on first error
-set -e
-
-# Delete older .pyc files
-# find . -type d \( -name env -o -name venv  \) -prune -false -o -name "*.pyc" -exec rm -rf {} \;
-
-# Run required migrations
 export FLASK_APP=core/server.py
+export FLASK_ENV=development
 
-# flask db init -d core/migrations/
-# flask db migrate -m "Initial migration." -d core/migrations/
-# flask db upgrade -d core/migrations/
+# Remove the existing SQLite database
+rm -f core/store.sqlite3
 
-# Run server
+# Run database migrations
+flask db upgrade -d core/migrations/
+
+# Start the server using Gunicorn
 gunicorn -c gunicorn_config.py core.server:app

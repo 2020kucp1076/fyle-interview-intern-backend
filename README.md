@@ -22,8 +22,20 @@ This challenge involves writing a backend service for a classroom. The challenge
 
 You will hear back within 48 hours from us via email. 
 
+## Docker Installation
+1. Docker should be running on the machine.
+2. change the working directory to project directory in terminal.
+3. To build the docker image of the project, Run the command from terminal 
+```
+docker-compose build
+```
+4. To run the built image, Run the command from terminal
+```
+docker-compose up
+```
+5. Navigate to localhost:5000 to access the project.
 
-## Installation
+## Local Installation
 
 1. Fork this repository to your github account
 2. Clone the forked repository and proceed with steps mentioned below

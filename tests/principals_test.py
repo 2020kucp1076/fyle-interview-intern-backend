@@ -1,5 +1,7 @@
 from core.models.assignments import AssignmentStateEnum, GradeEnum
-
+from sqlalchemy import text
+from core import db
+from core.models.teachers import Teacher
 
 def test_get_assignments(client, h_principal):
     response = client.get(
@@ -60,3 +62,29 @@ def test_regrade_assignment(client, h_principal):
 
     assert response.json['data']['state'] == AssignmentStateEnum.GRADED.value
     assert response.json['data']['grade'] == GradeEnum.B
+
+
+def test_list_teachers(client, h_principal):
+    """
+    Test case for listing all teachers and verifying user_id presence in SQL query result
+    """
+    response = client.get(
+        '/principal/teachers',
+        headers=h_principal
+    )
+
+    assert response.status_code == 200
+    data = response.json['data']
+    assert isinstance(data, list)
+
+    user_ids_from_response = [teacher['user_id'] for teacher in data]
+    with open('tests/SQL/list_teachers_check.sql', encoding='utf8') as fo:
+        sql = fo.read()
+
+    sql_result = db.session.execute(text(sql)).fetchall()
+    new_sql_result = [sql_result[i][0] for i in range(len(sql_result))]
+    
+    assert len(user_ids_from_response) == len(sql_result)
+ 
+    for user_id in user_ids_from_response:
+        assert user_id in new_sql_result
